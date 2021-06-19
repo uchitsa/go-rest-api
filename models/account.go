@@ -1,7 +1,7 @@
 package models
 
 import (
-	u "go-contacts/utils"
+	u "innohack-backend/utils"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
