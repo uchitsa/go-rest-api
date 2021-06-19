@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"encpding/json"
+	"encoding/json"
 	"net/http"
 )
 

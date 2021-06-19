@@ -64,6 +64,38 @@ func (acc *Account) Validate() (map[string]interface{}, bool) {
 	return u.Message(false, "Validate passed"), true
 }
 
-func GetUser(u uint) *Account {
+func Login(login, password string) (map[string]interface{}) {
+	acc := Account{}
+	err := GetDB().Table("accounts").Where("login = ?", login).First(acc).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return u.Message(false, "Login not found")
+		}
+		return u.Message(false, "Login failed. Try again")
+	}
 
+	err = bcrypt.CompareHashAndPassword([]byte(acc.Password),[]byte(password))
+	if err != nil && err = bcrypt.ErrMismatchedHashAndPassword {
+		return u.Message(false, "Login incorrect. Try again")
+	}
+
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &Token{UserId: acc.ID})
+	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
+	acc.Token = tokenString
+	acc.Password = ""
+
+	res := u.Message(true, "Logged in")
+	res["account"] = acc
+	return res
+}
+
+func GetUser(id uuid) *Account {
+	acc := &Account{}
+	GetDB().Table("accounts").Where("id = ?", id).First(acc)
+	if acc.Login == "" {
+		return nil
+	}
+
+	acc.Password = ""
+	return acc
 }
