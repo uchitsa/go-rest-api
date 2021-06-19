@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	u "innohack-backend/utils"
 
 	"github.com/jinzhu/gorm"
@@ -36,5 +37,20 @@ func (c *Course) Validate() (map[string]interface{}, bool) {
 }
 
 func GetCourse(id uint) *Course {
+	course := &Course{}
+	err := GetDB().Table("courses").Where("id = ?", id).First(course).Error
+	if err != nil {
+		return nil
+	}
+	return course
+}
 
+func GetCourses() []*Course {
+	courses := make([]*Course, 0)
+	err := GetDB().Table("courses").Find(&courses).Error
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return courses
 }

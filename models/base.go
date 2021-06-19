@@ -29,3 +29,7 @@ func init() {
 	db = conn
 	db.Debug().AutoMigrate(&Account{}, &Course{})
 }
+
+func GetDB() *gorm.DB {
+	return db
+}
